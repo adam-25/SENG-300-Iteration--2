@@ -73,7 +73,7 @@ public final class BanknoteValidator extends AbstractDevice<BanknoteValidatorObs
 	}
 
 	/**
-	 * Connects input and output channels to the banknote slot. Causes no events.
+	 * Connects input and output channels to the banknote validator. Causes no events.
 	 * <p>
 	 * This operation is permissible only during the configuration phase.
 	 * 

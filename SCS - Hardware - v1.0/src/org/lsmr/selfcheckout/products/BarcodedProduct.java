@@ -11,7 +11,6 @@ import org.lsmr.selfcheckout.devices.SimulationException;
 public class BarcodedProduct extends Product {
 	private final Barcode barcode;
 	private final String description;
-	private final double expectedWeightInGrams;
 
 	/**
 	 * Create a product.
@@ -22,16 +21,12 @@ public class BarcodedProduct extends Product {
 	 *            The description of the product.
 	 * @param price
 	 *            The price per-unit of the product.
-	 * @param expectedWeightInGrams
-	 *            The expected weight of each item of this product.
 	 * @throws SimulationException
 	 *             If any argument is null.
 	 * @throws SimulationException
 	 *             If the price is &le;0.
-	 * @throws IllegalArgumentException
-	 *             If the expected weight is &le;0.
 	 */
-	public BarcodedProduct(Barcode barcode, String description, BigDecimal price, double expectedWeightInGrams) {
+	public BarcodedProduct(Barcode barcode, String description, BigDecimal price) {
 		super(price, true);
 
 		if(barcode == null)
@@ -40,12 +35,8 @@ public class BarcodedProduct extends Product {
 		if(description == null)
 			throw new SimulationException(new NullPointerException("description is null"));
 
-		if(expectedWeightInGrams <= 0.0)
-			throw new IllegalArgumentException("Products have to have a positive expected weight.");
-		
 		this.barcode = barcode;
 		this.description = description;
-		this.expectedWeightInGrams = expectedWeightInGrams;
 	}
 
 	/**
@@ -64,14 +55,5 @@ public class BarcodedProduct extends Product {
 	 */
 	public String getDescription() {
 		return description;
-	}
-
-	/**
-	 * Get the expected weight.
-	 * 
-	 * @return The expected weight in grams.
-	 */
-	public double getExpectedWeight() {
-		return expectedWeightInGrams;
 	}
 }

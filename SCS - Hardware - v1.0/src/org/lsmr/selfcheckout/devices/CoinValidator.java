@@ -221,7 +221,7 @@ public final class CoinValidator extends AbstractDevice<CoinValidatorObserver> i
 			}
 			else {
 				try {
-					overflowSink.deliver(coin);
+					rejectionSink.deliver(coin);
 				}
 				catch(OverloadException e) {
 					// Should never happen

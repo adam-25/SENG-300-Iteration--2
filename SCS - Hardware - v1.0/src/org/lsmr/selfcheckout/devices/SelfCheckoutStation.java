@@ -19,11 +19,11 @@ import org.lsmr.selfcheckout.Coin;
  * A self-checkout possesses the following units of hardware that the customer
  * can see and interact with:
  * <ul>
- * <li>two electronic scales, with a configurable maximum weight before it
- * overloads, one for the bagging area and one for the scanning area;</li>
+ * <li>one electronic scale, with a configurable maximum weight before it
+ * overloads;</li>
  * <li>one receipt printer;</li>
  * <li>one card reader;</li>
- * <li>two scanners (the main one and the handheld one);</li>
+ * <li>one scanner;</li>
  * <li>one input slot for banknotes;</li>
  * <li>one output slot for banknotes;</li>
  * <li>one input slot for coins;</li>
@@ -88,11 +88,10 @@ import org.lsmr.selfcheckout.Coin;
  * operations).
  */
 public class SelfCheckoutStation {
-	public final ElectronicScale baggingArea, scanningArea;
+	public final ElectronicScale scale;
 	public final ReceiptPrinter printer;
 	public final CardReader cardReader;
-	public final BarcodeScanner mainScanner;
-	public final BarcodeScanner handheldScanner;
+	public final BarcodeScanner scanner;
 
 	public final BanknoteSlot banknoteInput, banknoteOutput;
 	public final BanknoteValidator banknoteValidator;
@@ -152,12 +151,10 @@ public class SelfCheckoutStation {
 				new IllegalArgumentException("There must be at least one allowable coin denomination defined."));
 
 		// Create the devices.
-		baggingArea = new ElectronicScale(scaleMaximumWeight, scaleSensitivity);
-		scanningArea = new ElectronicScale(scaleMaximumWeight / 10 + 1, scaleSensitivity);
+		scale = new ElectronicScale(scaleMaximumWeight, scaleSensitivity);
 		printer = new ReceiptPrinter();
 		cardReader = new CardReader();
-		mainScanner = new BarcodeScanner();
-		handheldScanner = new BarcodeScanner();
+		scanner = new BarcodeScanner();
 
 		this.banknoteDenominations = banknoteDenominations;
 		banknoteInput = new BanknoteSlot(false);
@@ -194,12 +191,10 @@ public class SelfCheckoutStation {
 		for(CoinDispenser coinDispenser : coinDispensers.values())
 			interconnect(coinDispenser, coinTray);
 
-		baggingArea.endConfigurationPhase();
-		scanningArea.endConfigurationPhase();
+		scale.endConfigurationPhase();
 		printer.endConfigurationPhase();
 		cardReader.endConfigurationPhase();
-		mainScanner.endConfigurationPhase();
-		handheldScanner.endConfigurationPhase();
+		scanner.endConfigurationPhase();
 
 		banknoteInput.endConfigurationPhase();
 		banknoteValidator.endConfigurationPhase();
@@ -211,7 +206,6 @@ public class SelfCheckoutStation {
 
 		coinSlot.endConfigurationPhase();
 		coinValidator.endConfigurationPhase();
-		// coinStorage.enable();
 		coinStorage.endConfigurationPhase();
 		coinTray.endConfigurationPhase();
 
@@ -220,16 +214,6 @@ public class SelfCheckoutStation {
 	}
 
 	private BidirectionalChannel<Banknote> validatorSource;
-
-	private boolean supervised = false;
-
-	boolean isSupervised() {
-		return supervised;
-	}
-
-	void setSupervised(boolean isSupervised) {
-		supervised = isSupervised;
-	}
 
 	private void interconnect(BanknoteSlot slot, BanknoteValidator validator) {
 		validatorSource = new BidirectionalChannel<Banknote>(slot, validator);
