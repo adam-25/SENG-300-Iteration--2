@@ -41,7 +41,8 @@ public class ScanItemController  {
 		
 		
 		//Register observers in the scanner
-		checkoutStation.scanner.attach(sic);
+		checkoutStation.mainScanner.attach(sic);
+		checkoutStation.handheldScanner.attach(sic);
 		
 	}
 	
@@ -72,7 +73,8 @@ public class ScanItemController  {
 		valueOfCart = valueOfCart.subtract(barcodePrice.get(barcode));
 		
 		if(bagAreaControl.getWeightOfCart() == weightOfCart) {
-			checkoutStation.scanner.enable();
+			checkoutStation.mainScanner.enable();
+			checkoutStation.handheldScanner.enable();
 		}
 	}
 	
@@ -93,7 +95,7 @@ public class ScanItemController  {
 		//Update the value of the cart
 		@Override
 		public void barcodeScanned(BarcodeScanner barcodeScanner, Barcode barcode) {
-			if(weightOfCart + barcodeWeight.get(barcode) <= checkoutStation.scale.getWeightLimit()) {
+			if(weightOfCart + barcodeWeight.get(barcode) <= checkoutStation.baggingArea.getWeightLimit()) {
 				weightOfCart = weightOfCart + barcodeWeight.get(barcode);	
 			}
 
@@ -105,9 +107,12 @@ public class ScanItemController  {
 			//If expected weight of cart (determined by scanner)
 			//Is not the same of actual weigh of cart (determined by electronic scale)
 			if(bagAreaControl.getWeightOfCart() != weightOfCart) {
-				checkoutStation.scanner.disable();
+				checkoutStation.mainScanner.disable();
+				checkoutStation.handheldScanner.disable();
+				
 			}else {
-				checkoutStation.scanner.enable();
+				checkoutStation.mainScanner.enable();
+				checkoutStation.handheldScanner.enable();
 			}
 			
 			
