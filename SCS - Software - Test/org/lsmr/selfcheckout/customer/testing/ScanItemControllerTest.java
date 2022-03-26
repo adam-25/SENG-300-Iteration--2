@@ -88,10 +88,10 @@ public class ScanItemControllerTest extends BaseTestClass{
 	
 	public void scanError(BarcodedItem item) {
 		while (true) {
-			cs.scanner.scan(item);
+			cs.handheldScanner.scan(item);
 			
 			if(SIcontroller.numOfScannedItems() == 1 + bAcontroller.getNumOfItemsInBaggingArea()) {
-				cs.scale.add(item);
+				cs.baggingArea.add(item);
 				break;
 			}
 		}
@@ -133,8 +133,8 @@ public class ScanItemControllerTest extends BaseTestClass{
 		Double expectedWeightOfCart = 0.0;
 		BigDecimal expectedValueOfCart = new BigDecimal(0);
 		
-		cs.scanner.disable();
-		cs.scanner.scan(milk);
+		cs.handheldScanner.disable();
+		cs.handheldScanner.scan(milk);
 		
 		
 		Assert.assertEquals(new BigDecimal(0), SIcontroller.getValueOfCart());
