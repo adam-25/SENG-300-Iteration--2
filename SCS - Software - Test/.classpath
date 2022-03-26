@@ -7,7 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="src" path="/SCS - Hardware - v1.0"/>
 	<classpathentry kind="src" path="/SCS - Software"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SCS - Hardware - v2.0"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
