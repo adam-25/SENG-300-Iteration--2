@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="SCS - Hardware - v2.0/src"/>
 	<classpathentry kind="src" path="SCS - Software - Test"/>
 	<classpathentry kind="src" path="SCS - Software"/>
