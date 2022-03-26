@@ -27,7 +27,7 @@ public class BaggingAreaController {
 		
 		
 		//Register observers to the scanner
-		checkoutStation.scale.attach(bac);
+		checkoutStation.baggingArea.attach(bac);
 		
 	}
 	
@@ -73,9 +73,11 @@ public class BaggingAreaController {
 			//If expected weight of cart (determined by scanner)
 			//Is the same of actual weigh of cart (determined by electronic scale)
 			if(scanItemControl.getWeightOfCart() == weightOfCart) {
-				checkoutStation.scanner.enable();
+				checkoutStation.mainScanner.enable();
+				checkoutStation.handheldScanner.enable();
 			}else {
-				checkoutStation.scanner.disable();
+				checkoutStation.mainScanner.disable();
+				checkoutStation.handheldScanner.disable();
 			}
 			
 		}
@@ -83,13 +85,15 @@ public class BaggingAreaController {
 		//Disable bar code scanner
 		@Override
 		public void overload(ElectronicScale scale) {
-			checkoutStation.scanner.disable();
+			checkoutStation.mainScanner.disable();
+			checkoutStation.handheldScanner.disable();
 		}
 
 		//Enable bar code scanner
 		@Override
 		public void outOfOverload(ElectronicScale scale) {
-			checkoutStation.scanner.enable();	
+			checkoutStation.mainScanner.enable();	
+			checkoutStation.handheldScanner.enable();
 		}
 		
 	}
