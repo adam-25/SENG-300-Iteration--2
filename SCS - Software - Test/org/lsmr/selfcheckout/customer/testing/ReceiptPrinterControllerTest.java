@@ -10,15 +10,13 @@ import org.lsmr.selfcheckout.Barcode;
 import org.lsmr.selfcheckout.BarcodedItem;
 import org.lsmr.selfcheckout.Item;
 import org.lsmr.selfcheckout.Numeral;
-import org.lsmr.selfcheckout.customer.BaggingAreaController;
-import org.lsmr.selfcheckout.customer.PaymentController;
-import org.lsmr.selfcheckout.customer.ReceiptPrinterController;
-import org.lsmr.selfcheckout.customer.ScanItemController;
+import org.lsmr.selfcheckout.customer.*;
+//import org.lsmr.selfcheckout.customer.PaymentController;
+//import org.lsmr.selfcheckout.customer.ReceiptPrinterController;
+//import org.lsmr.selfcheckout.customer.ScanItemController;
 import org.lsmr.selfcheckout.devices.DisabledException;
 import org.lsmr.selfcheckout.devices.OverloadException;
 import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
-import org.lsmr.selfcheckout.Numeral;
-
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
@@ -105,10 +103,10 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 	
 	public void scanError(BarcodedItem item) {
 		while (true) {
-			cs.scanner.scan(item);
+			cs.handheldScanner.scan(item);
 			
 			if(SIcontroller.numOfScannedItems() == 1 + bAcontroller.getNumOfItemsInBaggingArea()) {
-				cs.scale.add(item);
+				cs.baggingArea.add(item);
 				break;
 			}
 		}

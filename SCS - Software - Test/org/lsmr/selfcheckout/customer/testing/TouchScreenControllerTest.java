@@ -25,7 +25,7 @@ public class TouchScreenControllerTest extends BaseTestClass {
 	@Test
 	public void testInitStart() {
 		touchScreenController.initiateStart();
-		Assert.assertFalse(checkoutStation.scanner.isDisabled());
+		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 	}
 	
 	
@@ -34,7 +34,7 @@ public class TouchScreenControllerTest extends BaseTestClass {
 	@Test
 	public void testInitCheckout() {
 		touchScreenController.inititateCheckout();
-		Assert.assertTrue(checkoutStation.scanner.isDisabled());
+		Assert.assertTrue(checkoutStation.handheldScanner.isDisabled());
 		Assert.assertFalse(checkoutStation.banknoteInput.isDisabled());
 		Assert.assertFalse(checkoutStation.coinSlot.isDisabled());
 	}
