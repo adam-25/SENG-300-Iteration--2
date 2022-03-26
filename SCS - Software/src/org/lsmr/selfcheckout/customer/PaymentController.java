@@ -91,6 +91,11 @@ public class PaymentController{
 		//go back to payment options
 	}
 	
+	public String getMembershipNo()
+	{
+		return membershipNo;
+	}
+	
 	public boolean hasMembership()
 	{
 		if(membershipNo == null)

@@ -54,6 +54,10 @@ public class ReceiptPrinterController {
 		for(int i =0; i < receiptMessage.length(); i++) {
 			checkoutStation.printer.print(receiptMessage.charAt(i));		
 		}
+		
+		if(payControl.hasMembership() == true) {
+			receiptMessage = receiptMessage + "\n" + payControl.getMembershipNo();
+		}
 	}
 	
 	//Returns the receipts message
