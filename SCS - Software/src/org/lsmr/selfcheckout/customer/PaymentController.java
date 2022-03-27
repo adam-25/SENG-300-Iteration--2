@@ -7,8 +7,10 @@ import java.util.Currency;
 import java.util.List;
 
 import org.lsmr.selfcheckout.BlockedCardException;
+import org.lsmr.selfcheckout.Card;
 import org.lsmr.selfcheckout.Coin;
 import org.lsmr.selfcheckout.Card.CardData;
+import org.lsmr.selfcheckout.Card.CardSwipeData;
 import org.lsmr.selfcheckout.devices.AbstractDevice;
 import org.lsmr.selfcheckout.devices.BanknoteSlot;
 import org.lsmr.selfcheckout.devices.BanknoteValidator;
@@ -87,7 +89,7 @@ public class PaymentController{
 	//be displayed on the customer's screen and then would prompt him to select a payment option
 	public void displayError() 
 	{
-		System.out.println("an error has occured");
+		System.out.println("an error has occurred");
 		//go back to payment options
 	}
 	
@@ -104,6 +106,14 @@ public class PaymentController{
 		}
 		
 		return true;
+	}
+	
+	public void notifyManualMembershipEntry(String manualMembershipNo) {
+		//Simulates customer entering their membership number through touch screen.
+		manualMembershipNo = "405200";
+		//Simulate going to the database and finding which account corresponds with
+		// the entered Membership number
+		membershipNo = manualMembershipNo;
 	}
 	
 	//If all items have been paid for, return true
@@ -214,11 +224,11 @@ public class PaymentController{
 		
 		public boolean verifyCVV(String data)
 		{
-			return false;
+			return verified;
 		}
 		public boolean verifyCardNumber(String data)
 		{
-			return false;
+			return verified;
 		}
 		
 		public boolean verifyDebitCard(CardData data)
@@ -257,13 +267,13 @@ public class PaymentController{
 
 		@Override
 		public void cardRemoved(CardReader reader) {
-			// ignore - membership cards can only be swiped or have number manually entered.
+			// ignore
 			
 		}
 
 		@Override
 		public void cardTapped(CardReader reader) {
-			// ignore - membership cards can only be swiped or have number manually entered.
+			System.out.println("Reading card data. Please wait...");
 			
 		}
 
@@ -279,7 +289,11 @@ public class PaymentController{
 			String cardType = data.getType();
 			String cardNumber = data.getNumber();
 			String cardHolder = data.getCardholder();
-			String cardCVV = data.getCVV();
+			String cardCVV = null;
+			
+			if (!(data instanceof CardSwipeData)) {
+			cardCVV = data.getCVV();
+			}
 			
 			if(cardType == null)
 			{

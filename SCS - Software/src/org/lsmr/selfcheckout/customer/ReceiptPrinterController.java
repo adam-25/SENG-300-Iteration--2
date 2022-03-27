@@ -50,13 +50,13 @@ public class ReceiptPrinterController {
 					+ barcodePrice.get(barcode) + "\n";
 		}
 		receiptMessage = receiptMessage + "Total Price: " + payControl.getInitialValueOfCart();
+		
+		if(payControl.hasMembership()) {
+			receiptMessage = receiptMessage + "\n\n" + payControl.getMembershipNo();
+		}
 	
 		for(int i =0; i < receiptMessage.length(); i++) {
 			checkoutStation.printer.print(receiptMessage.charAt(i));		
-		}
-		
-		if(payControl.hasMembership() == true) {
-			receiptMessage = receiptMessage + "\n" + payControl.getMembershipNo();
 		}
 	}
 	
