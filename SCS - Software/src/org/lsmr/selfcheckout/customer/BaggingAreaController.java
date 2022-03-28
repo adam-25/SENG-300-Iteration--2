@@ -3,6 +3,7 @@ package org.lsmr.selfcheckout.customer;
 import org.lsmr.selfcheckout.devices.AbstractDevice;
 import org.lsmr.selfcheckout.devices.ElectronicScale;
 import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
+import org.lsmr.selfcheckout.devices.SimulationException;
 import org.lsmr.selfcheckout.devices.observers.AbstractDeviceObserver;
 import org.lsmr.selfcheckout.devices.observers.ElectronicScaleObserver;
 
@@ -14,6 +15,7 @@ public class BaggingAreaController {
 	private ScanItemController scanItemControl;
 	private int numOfItemsInBaggingArea;
 	private double previousWeightOfCart;
+	private long begin;
 	
 	
 	//Constructor
@@ -39,6 +41,10 @@ public class BaggingAreaController {
 	
 	public int getNumOfItemsInBaggingArea() {
 		return numOfItemsInBaggingArea;
+	}
+	
+	public void getBeginTime(long begin) {
+		this.begin = begin;
 	}
 	
 	
@@ -80,6 +86,10 @@ public class BaggingAreaController {
 				checkoutStation.handheldScanner.disable();
 			}
 			
+			long end = System.currentTimeMillis();
+			if (end - begin > 5000) {
+				throw new SimulationException("Fail to place the item in the bagging area within the required time");
+			}	
 		}
 
 		//Disable bar code scanner
@@ -95,16 +105,11 @@ public class BaggingAreaController {
 			checkoutStation.mainScanner.enable();	
 			checkoutStation.handheldScanner.enable();
 		}
-		
 	}
-	
 	
 	
 	public double getWeightOfCart() {
 		return weightOfCart;
 	}
-	
-	
-	
 
 }
