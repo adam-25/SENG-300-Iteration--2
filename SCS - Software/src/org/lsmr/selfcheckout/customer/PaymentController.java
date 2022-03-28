@@ -222,15 +222,27 @@ public class PaymentController{
 	
 	private class CC implements CardReaderObserver {
 		
+		
+		
 		public boolean verifyCVV(String data)
 		{
-			return verified;
-		}
-		public boolean verifyCardNumber(String data)
-		{
-			return verified;
+			if(data.matches("[0-9]+") && data.length() ==  3)
+			{
+				return true;
+			}
+			return false;
 		}
 		
+		public boolean verifyCardNumber(String data)
+		{
+			if(data.matches("[0-9]+") && data.length() ==  3)
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		//verifies that the card info is correct and that card has sufficient funds 
 		public boolean verifyDebitCard(CardData data)
 		{
 			return verified;
@@ -302,11 +314,24 @@ public class PaymentController{
 			
 			if(cardType == debit)
 			{
-				//review try catch logic
-				if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
+				if (!(data instanceof CardSwipeData))
 				{
-					displayError();
+					//review try catch logic
+					if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
+					{
+						displayError();
+					}
+				
 				}
+				else
+				{
+					//review try catch logic
+					if(verifyCardNumber(cardNumber) == false || cardHolder == null)
+					{
+						displayError();
+					}
+				}
+				
 				
 				if(verifyDebitCard(data) == true)
 				{
@@ -322,9 +347,22 @@ public class PaymentController{
 			else if(cardType == credit)
 			{
 				//review try catch logic
-				if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
+				if (!(data instanceof CardSwipeData))
 				{
-					displayError();
+					//review try catch logic
+					if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
+					{
+						displayError();
+					}
+				
+				}
+				else
+				{
+					//review try catch logic
+					if(verifyCardNumber(cardNumber) == false || cardHolder == null)
+					{
+						displayError();
+					}
 				}
 				
 				if(verifyCreditCard(data) == true)
