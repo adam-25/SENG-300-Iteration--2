@@ -183,7 +183,7 @@ public class ChangeReceiveController {
 
 		@Override
 		public void coinsEmpty(CoinDispenser dispenser) {
-			// throw some error when coins are empty
+			//coin dispenser is empty
 			
 			
 		}
@@ -258,7 +258,7 @@ public class ChangeReceiveController {
 
 		@Override
 		public void banknotesEmpty(BanknoteDispenser dispenser) {
-			// TODO Auto-generated method stub
+			//bank note dispenser is empty
 			
 		}
 
