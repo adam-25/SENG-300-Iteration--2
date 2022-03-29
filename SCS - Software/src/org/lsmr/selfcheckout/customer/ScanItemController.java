@@ -134,4 +134,12 @@ public class ScanItemController  {
 		return weightOfCart;
 	}
 
+	public HashMap<Barcode, BigDecimal> getBarcodePrice(){
+		return this.barcodePrice;
+	}
+
+	public HashMap<Barcode, Double> getBarcodeWeight(){
+		return this.barcodeWeight;
+	}
+
 }
