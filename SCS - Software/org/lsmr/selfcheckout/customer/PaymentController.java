@@ -42,7 +42,9 @@ public class PaymentController{
 	private final String membership = "MEMBERSHIP";
 	public boolean verified = true;
 	private String membershipNo = null;
-	
+	private boolean showError = false;
+	private boolean cardDataRead = false;
+	private boolean cardInsert = false;
 	
 	
 	//Customer checkout use case 
@@ -85,17 +87,44 @@ public class PaymentController{
 		valueOfCart = cartValue;
 	}
 	
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 	//this method is used when an invalid card is read, in the final implementation, an error would
 	//be displayed on the customer's screen and then would prompt him to select a payment option
 	public void displayError() 
 	{
 		System.out.println("an error has occurred");
 		//go back to payment options
+=======
+	public boolean getShowError()
+	{
+		return showError;
+	}
+	
+	public boolean getCardInserted()
+	{
+		return cardInsert;
+	}
+	
+	/**
+	 * This method is used when an invalid card is read. In the final implementation, an error would
+	 * be displayed on the customer's screen, then they would get prompted to choose a payment option.
+	*/
+	public void displayError() 
+	{
+		System.out.println("an error has occurred");
+		showError = true;
+		// The user would get sent back to the payment options screen in the final implementation
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 	}
 	
 	public String getMembershipNo()
 	{
 		return membershipNo;
+	}
+	
+	public boolean getCardData()
+	{
+		return cardDataRead;
 	}
 	
 	public boolean hasMembership()
@@ -261,14 +290,22 @@ public class PaymentController{
 
 		@Override
 		public void cardInserted(CardReader reader) {
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 			// ignore 
 			
+=======
+			cardInsert = true;
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 		}
 
 		@Override
 		public void cardRemoved(CardReader reader) {
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 			// ignore
 			
+=======
+			cardInsert = false;
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 		}
 
 		@Override
@@ -285,7 +322,12 @@ public class PaymentController{
 		}
 
 		@Override
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 		public void cardDataRead(CardReader reader, CardData data){
+=======
+		public void cardDataRead(CardReader reader, CardData data) {
+			cardDataRead = true;
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 			String cardType = data.getType();
 			String cardNumber = data.getNumber();
 			String cardHolder = data.getCardholder();
@@ -295,6 +337,7 @@ public class PaymentController{
 			cardCVV = data.getCVV();
 			}
 			
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 			if(cardType == null)
 			{
 					displayError();
@@ -307,6 +350,28 @@ public class PaymentController{
 				{
 					displayError();
 				}
+=======
+			
+			// We don't need it because if CardType is null then SimulationException will be directly thrown.
+			if(cardType == null) {
+				displayError();
+			}
+			
+			
+			else if(cardType == debit) {
+				// Card was tapped or inserted. Need to verify CVV
+				if (!(data instanceof CardSwipeData)) {
+					if(verifyCardNumber(cardNumber) == true && cardHolder != null && verifyCVV(cardCVV) == true) {
+						if(verifyDebitCard(data) == true) {
+							valueOfCart = new BigDecimal(0);
+							isAllItemPaid();
+						} else {
+							displayError();
+						}
+					} else {
+						displayError();
+					}
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 				
 				if(verifyDebitCard(data) == true)
 				{
@@ -340,10 +405,21 @@ public class PaymentController{
 			
 			}
 			
+<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
 			else if(cardType == membership)
 			{
 				if(cardHolder == null || verifyCardNumber(cardNumber) == false)
 				{
+=======
+			else if(cardType == membership){
+				// Change || to && Need to check.
+				// Membership cards are always swiped
+				if(cardHolder != null && verifyCardNumber(cardNumber) == true) {
+					if(verifyMembershipCard(data) == true) {
+						membershipNo = cardNumber;
+					}
+				} else {
+>>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 					displayError();
 				}
 				if(verifyMembershipCard(data) == true)

@@ -9,6 +9,7 @@ import org.lsmr.selfcheckout.Banknote;
 import org.lsmr.selfcheckout.Barcode;
 import org.lsmr.selfcheckout.BarcodedItem;
 import org.lsmr.selfcheckout.Card;
+import org.lsmr.selfcheckout.ChipFailureException;
 import org.lsmr.selfcheckout.Card.CardData;
 import org.lsmr.selfcheckout.Item;
 import org.lsmr.selfcheckout.Numeral;
@@ -154,7 +155,7 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 	BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
 	
 	//Making the membership card
-	Card mcard = new Card("MEMBERSHIP", "405119", "Jimmy Johnson", null, null, false, false);
+	Card mcard = new Card("MEMBERSHIP", "1234567890123456", "Jimmy Johnson", null, null, false, false);
 	
 	cs.cardReader.swipe(mcard);
 	
@@ -176,6 +177,75 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 	
 	//Check if controller expected receipt match the one from the printer
 	Assert.assertEquals(RPcontroller.getReceipt(), cs.printer.removeReceipt());
+	}
+	
+	@Test
+	public void membershipCardDisplayErrorTest() throws DisabledException, OverloadException, IOException {
+		
+	BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+	BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+	BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+	
+	//Making the membership card
+	Card mcard = new Card("MEMBERSHIP", "405119", "Name", null, null, false, false);
+	
+	cs.cardReader.swipe(mcard);
+	
+	//Scanning Items
+	scanError(milk);
+	scanError(eggs);
+	scanError(toast);
+	
+	//Total Cost of Item is 10.00
+	PAcontroller.setValueOfCart(new BigDecimal(10));
+	
+	//Item has been paid for
+	cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 10));
+	
+	//Print the receipt
+	RPcontroller.printReceipt();
+	
+	cs.printer.cutPaper();
+	
+	//Check if controller expected receipt match the one from the printer
+	Assert.assertTrue(PAcontroller.getShowError());
+	}
+	
+	@Test
+	public void membershipCardNoOnReceiptTest()
+	{
+		BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+		BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+		BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+		
+		Card mcard = new Card("MEMBERSHIP", "1234567890123456", "Name", null, null, false, false);
+		
+		try {
+			cs.cardReader.swipe(mcard);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Scanning Items
+		scanError(milk);
+		scanError(eggs);
+		scanError(toast);
+		
+		PAcontroller.setValueOfCart(new BigDecimal(10));
+			
+		try {
+			cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 10));
+		} catch (DisabledException | OverloadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		RPcontroller.printReceipt();
+		
+		cs.printer.cutPaper();
+		
+		Assert.assertTrue(cs.printer.removeReceipt().contains(PAcontroller.getMembershipNo()));
+		
 	}
 	
 }
