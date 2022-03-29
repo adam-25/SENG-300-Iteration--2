@@ -3,6 +3,7 @@ package org.lsmr.selfcheckout.customer;
 import org.lsmr.selfcheckout.devices.AbstractDevice;
 import org.lsmr.selfcheckout.devices.ElectronicScale;
 import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
+import org.lsmr.selfcheckout.devices.SimulationException;
 import org.lsmr.selfcheckout.devices.observers.AbstractDeviceObserver;
 import org.lsmr.selfcheckout.devices.observers.ElectronicScaleObserver;
 
@@ -14,6 +15,7 @@ public class BaggingAreaController {
 	private ScanItemController scanItemControl;
 	private int numOfItemsInBaggingArea;
 	private double previousWeightOfCart;
+	private long begin;
 	
 	
 	//Constructor
@@ -27,7 +29,7 @@ public class BaggingAreaController {
 		
 		
 		//Register observers to the scanner
-		checkoutStation.scale.attach(bac);
+		checkoutStation.baggingArea.attach(bac);
 		
 	}
 	
@@ -39,6 +41,10 @@ public class BaggingAreaController {
 	
 	public int getNumOfItemsInBaggingArea() {
 		return numOfItemsInBaggingArea;
+	}
+	
+	public void getBeginTime(long begin) {
+		this.begin = begin;
 	}
 	
 	
@@ -72,46 +78,38 @@ public class BaggingAreaController {
 			//Once item has been placed in bagging area, enable the scanner
 			//If expected weight of cart (determined by scanner)
 			//Is the same of actual weigh of cart (determined by electronic scale)
-			if(scanItemControl.getWeightOfCart() == weightOfCart && weightOfCart - scanItemControl.getWeightOfCart() < scanItemControl.getSensitivity()){
-				checkoutStation.scanner.enable();
+			if(scanItemControl.getWeightOfCart() == weightOfCart) {
+				checkoutStation.mainScanner.enable();
+				checkoutStation.handheldScanner.enable();
 			}else {
-				checkoutStation.scanner.disable();
+				checkoutStation.mainScanner.disable();
+				checkoutStation.handheldScanner.disable();
 			}
 			
+			long end = System.currentTimeMillis();
+			if (end - begin > 5000) {
+				throw new SimulationException("Fail to place the item in the bagging area within the required time");
+			}	
 		}
 
 		//Disable bar code scanner
 		@Override
 		public void overload(ElectronicScale scale) {
-			checkoutStation.scanner.disable();
+			checkoutStation.mainScanner.disable();
+			checkoutStation.handheldScanner.disable();
 		}
 
 		//Enable bar code scanner
 		@Override
 		public void outOfOverload(ElectronicScale scale) {
-			checkoutStation.scanner.enable();	
+			checkoutStation.mainScanner.enable();	
+			checkoutStation.handheldScanner.enable();
 		}
-		
 	}
-	
 	
 	
 	public double getWeightOfCart() {
 		return weightOfCart;
 	}
-
-	public void attendantVeritfyBag(){
-		BigDecimal bagPrice = new BigDecimal(0);
-		Numeral[] nBag = {Numeral.one, Numeral.two, Numeral.three, Numeral.four};
-		Barcode barcodeBag = new Barcode(nBag);
-		scanItemControl.barcodePrice.put(barcodeBag, bagPrice);
-		double bagWeight = weightOfCart - previousWeightOfCart;
-		scanItemControl.barcodeWeight.put(barcodeBag, bagWeight);
-		BarcodedItem bagItem = new BarcodedItem(barcodeBag, bagWeight);
-		checkoutStation.scan(bagItem);
-	}
-	
-	
-	
 
 }

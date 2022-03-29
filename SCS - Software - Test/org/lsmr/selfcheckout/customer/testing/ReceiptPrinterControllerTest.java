@@ -8,6 +8,8 @@ import java.util.HashMap;
 import org.lsmr.selfcheckout.Banknote;
 import org.lsmr.selfcheckout.Barcode;
 import org.lsmr.selfcheckout.BarcodedItem;
+import org.lsmr.selfcheckout.Card;
+import org.lsmr.selfcheckout.Card.CardData;
 import org.lsmr.selfcheckout.Item;
 import org.lsmr.selfcheckout.Numeral;
 import org.lsmr.selfcheckout.customer.BaggingAreaController;
@@ -19,6 +21,7 @@ import org.lsmr.selfcheckout.devices.OverloadException;
 import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
 import org.lsmr.selfcheckout.Numeral;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
@@ -102,13 +105,13 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 		RPcontroller.setControllers(SIcontroller, PAcontroller);
 		
 	}
-	
+	//Utility function for scanning, also scans items normally despite the name.
 	public void scanError(BarcodedItem item) {
 		while (true) {
-			cs.scanner.scan(item);
+			cs.handheldScanner.scan(item);
 			
 			if(SIcontroller.numOfScannedItems() == 1 + bAcontroller.getNumOfItemsInBaggingArea()) {
-				cs.scale.add(item);
+				cs.baggingArea.add(item);
 				break;
 			}
 		}
@@ -122,6 +125,38 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 	BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
 	BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
 	BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+	
+	//Scanning Items
+	scanError(milk);
+	scanError(eggs);
+	scanError(toast);
+	
+	//Total Cost of Item is 10.00
+	PAcontroller.setValueOfCart(new BigDecimal(10));
+	
+	//Item has been paid for
+	cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 10));
+	
+	//Print the receipt
+	RPcontroller.printReceipt();
+	
+	cs.printer.cutPaper();
+	
+	//Check if controller expected receipt match the one from the printer
+	Assert.assertEquals(RPcontroller.getReceipt(), cs.printer.removeReceipt());
+	}
+	
+	@Test
+	public void membershipNoTest() throws DisabledException, OverloadException, IOException {
+		
+	BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+	BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+	BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+	
+	//Making the membership card
+	Card mcard = new Card("MEMBERSHIP", "405119", "Jimmy Johnson", null, null, false, false);
+	
+	cs.cardReader.swipe(mcard);
 	
 	//Scanning Items
 	scanError(milk);
