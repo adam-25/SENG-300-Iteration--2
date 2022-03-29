@@ -78,6 +78,10 @@ public class ScanItemController  {
 		}
 	}
 	
+	public void getBeginTime(long begin) {
+		bagAreaControl.getBeginTime(begin);
+	}
+	
 	//Barcode Scanner Observer Implementation
 	public class SIC implements BarcodeScannerObserver {
 		
@@ -115,7 +119,8 @@ public class ScanItemController  {
 				checkoutStation.handheldScanner.enable();
 			}
 			
-			
+			long begin = System.currentTimeMillis();
+			getBeginTime(begin);
 		}
 	}
 	
