@@ -239,7 +239,7 @@ public class PaymentController{
 		 * Checks to make sure the Card Number is of length 16 and only contains digits
 		*/
 		public boolean verifyCardNumber(String data) {
-			if(data.matches("[0-9]+") && data.length() ==  3) {
+			if(data.matches("[0-9]+") && data.length() ==  16) {
 				return true;
 			}
 			return false;
