@@ -27,9 +27,16 @@ import org.lsmr.selfcheckout.devices.observers.CoinSlotObserver;
 import org.lsmr.selfcheckout.devices.observers.CoinTrayObserver;
 import org.lsmr.selfcheckout.devices.observers.CoinValidatorObserver;
 
-
 public class PaymentController{
 
+	// The three possible values CardDate.getType() should return
+	private final String debit = "DEBIT";
+	private final String credit = "CREDIT";
+	private final String membership = "MEMBERSHIP";
+	
+	// Used for testing. Setting verified to false will simulate the bank rejecting the credit/debit card.
+	public boolean verified = true;
+	
 	private BigDecimal valueOfCart;
 	private final SelfCheckoutStation checkoutStation; 
 	private PCC pcc;
@@ -37,40 +44,33 @@ public class PaymentController{
 	private CC cc;
 	private List<Coin> coinTrayList;
 	private BigDecimal initialValueOfCart;
-	private final String debit = "DEBIT";
-	private final String credit = "CREDIT";
-	private final String membership = "MEMBERSHIP";
-	public boolean verified = true;
 	private String membershipNo = null;
 	private boolean showError = false;
 	private boolean cardDataRead = false;
 	private boolean cardInsert = false;
 	
-	
-	//Customer checkout use case 
 	public PaymentController(SelfCheckoutStation cs){
 		checkoutStation = cs;
 		initialValueOfCart = new BigDecimal(0);
 		valueOfCart = new BigDecimal(0);
 		coinTrayList = new ArrayList<Coin>();
 		
-		
-		//Initializing observers
+		// Initializing observers
 		pcc = new PCC();
 		pcb = new PCB();
 		cc = new CC();
 		
-		//Register observers in the coin related devices
+		// Register observers in the coin related devices
 		checkoutStation.coinSlot.attach(pcc);
 		checkoutStation.coinValidator.attach(pcc);
 		checkoutStation.coinTray.attach(pcc);
 		
-		//Registers observers in the bank note related devices
+		// Registers observers in the bank note related devices
 		checkoutStation.banknoteInput.attach(pcb);
 		checkoutStation.banknoteValidator.attach(pcb);
 		checkoutStation.banknoteInput.attach(pcb);
 		
-		//Registers observers in the Card related devices
+		// Registers observers in the Card related devices
 		 checkoutStation.cardReader.attach(cc);
 	}
 	
@@ -87,14 +87,6 @@ public class PaymentController{
 		valueOfCart = cartValue;
 	}
 	
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-	//this method is used when an invalid card is read, in the final implementation, an error would
-	//be displayed on the customer's screen and then would prompt him to select a payment option
-	public void displayError() 
-	{
-		System.out.println("an error has occurred");
-		//go back to payment options
-=======
 	public boolean getShowError()
 	{
 		return showError;
@@ -114,7 +106,6 @@ public class PaymentController{
 		System.out.println("an error has occurred");
 		showError = true;
 		// The user would get sent back to the payment options screen in the final implementation
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 	}
 	
 	public String getMembershipNo()
@@ -138,15 +129,19 @@ public class PaymentController{
 	}
 	
 	public void notifyManualMembershipEntry(String manualMembershipNo) {
-		//Simulates customer entering their membership number through touch screen.
+		// Simulates customer entering their membership number through touch screen.
 		manualMembershipNo = "405200";
-		//Simulate going to the database and finding which account corresponds with
-		// the entered Membership number
+		/**
+		 * Simulate going to the database and finding which account corresponds with
+		 * the entered Membership number
+		*/
 		membershipNo = manualMembershipNo;
 	}
 	
-	//If all items have been paid for, return true
-	//And disable the coin and bank note slot
+	/**
+	 * If all items have been paid for, return true
+	 * And disable the coin and bank note slot.
+	*/
 	public boolean isAllItemPaid() {
 		if (valueOfCart.compareTo(new BigDecimal(0)) == -1 || valueOfCart.compareTo(new BigDecimal(0)) == 0 ) {
 			checkoutStation.coinSlot.disable();
@@ -157,10 +152,10 @@ public class PaymentController{
 		return false;
 	}
 	
-
 	public List<Coin> getCoinTrayList() {
 		return coinTrayList;
 	}
+	
 	
 	//COIN PAYMENT - Implementation of Coin observers
 	private class PCC implements CoinSlotObserver, CoinValidatorObserver, CoinTrayObserver{
@@ -194,7 +189,6 @@ public class PaymentController{
 		
 		@Override
 		public void coinAdded(CoinTray tray) {
-			
 			//Simulates removal of coin from the coin tray
 			for(Coin theCoin :tray.collectCoins() ) {
 				coinTrayList.add(theCoin);
@@ -204,11 +198,8 @@ public class PaymentController{
 	}
 	
 	
-	
-	
 	//BANKNOTE PAYMENT - Implementation of Bank note observers
-	private class PCB implements BanknoteSlotObserver, BanknoteValidatorObserver{
-		
+	private class PCB implements BanknoteSlotObserver, BanknoteValidatorObserver{	
 		@Override
 		public void enabled(AbstractDevice<? extends AbstractDeviceObserver> device) {			
 			//Ignore
@@ -249,108 +240,90 @@ public class PaymentController{
 		}
 	}
 	
-	private class CC implements CardReaderObserver {
-		
-		public boolean verifyCVV(String data)
-		{
-			return verified;
-		}
-		public boolean verifyCardNumber(String data)
-		{
-			return verified;
-		}
-		
-		public boolean verifyDebitCard(CardData data)
-		{
-			return verified;
-		}
-		
-		public boolean verifyCreditCard(CardData data)
-		{
-			return verified;
-		}
-		
-		public boolean verifyMembershipCard(CardData data)
-		{
-			return verified;
-		}
 	
+	//CARD CONTROLLER - Implementation of CardReader observers
+	private class CC implements CardReaderObserver {
+		/**
+		 * Checks to make sure the CVV is of length 3 and only contains digits
+		*/
+		public boolean verifyCVV(String data) {
+			if(data.matches("[0-9]+") && data.length() ==  3) {
+				return true;
+			}
+			return false;
+		}
+		
+		/**
+		 * Checks to make sure the Card Number is of length 16 and only contains digits
+		*/
+		public boolean verifyCardNumber(String data) {
+			if(data.matches("[0-9]+") && data.length() ==  16) {
+				return true;
+			}
+			return false;
+		}
+		
+		// Simulates verifying a debit card with the bank. Returns verified.
+		public boolean verifyDebitCard(CardData data) {
+			return verified;
+		}
+		
+		// Simulates verifying a credit card with the bank. Returns verified.
+		public boolean verifyCreditCard(CardData data) {
+			return verified;
+		}
+		
+		// Simulates verifying a membership card with the database containing membership info. Returns verified.
+		public boolean verifyMembershipCard(CardData data) {
+			return verified;
+		}
 
 		@Override
 		public void enabled(AbstractDevice<? extends AbstractDeviceObserver> device) {
 			// ignore
-			
 		}
 
 		@Override
 		public void disabled(AbstractDevice<? extends AbstractDeviceObserver> device) {
 			// ignore
-			
 		}
 
 		@Override
 		public void cardInserted(CardReader reader) {
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-			// ignore 
-			
-=======
 			cardInsert = true;
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 		}
 
 		@Override
 		public void cardRemoved(CardReader reader) {
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-			// ignore
-			
-=======
 			cardInsert = false;
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 		}
 
 		@Override
 		public void cardTapped(CardReader reader) {
 			System.out.println("Reading card data. Please wait...");
-			
 		}
 
 		@Override
 		public void cardSwiped(CardReader reader) {
 			System.out.println("Reading card data. Please wait...");
-		
-			
 		}
 
+		/**
+		 * Method is called whenever a card of any type is swiped, inserted or tapped by the CardReader
+		*/
 		@Override
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-		public void cardDataRead(CardReader reader, CardData data){
-=======
 		public void cardDataRead(CardReader reader, CardData data) {
 			cardDataRead = true;
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 			String cardType = data.getType();
 			String cardNumber = data.getNumber();
 			String cardHolder = data.getCardholder();
 			String cardCVV = null;
 			
+			// If the card was swiped you cannot get the CVV information
 			if (!(data instanceof CardSwipeData)) {
 			cardCVV = data.getCVV();
 			}
 			
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-			if(cardType == null)
-			{
-					displayError();
-			}
-			
-			if(cardType == debit)
-			{
-				//review try catch logic
-				if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
-				{
-					displayError();
-				}
-=======
 			
 			// We don't need it because if CardType is null then SimulationException will be directly thrown.
 			if(cardType == null) {
@@ -371,46 +344,51 @@ public class PaymentController{
 					} else {
 						displayError();
 					}
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 				
-				if(verifyDebitCard(data) == true)
-				{
-					valueOfCart = new BigDecimal(0);
-					isAllItemPaid();
+				// Card was swiped. Verify only card name and number
+				} else {
+					if(verifyCardNumber(cardNumber) == true && cardHolder != null) {
+						if(verifyDebitCard(data) == true) {
+							valueOfCart = new BigDecimal(0);
+							isAllItemPaid();
+						} else {
+							displayError();
+						}
+					} else {
+						displayError();
+					}
 				}
-				else {
-					displayError();
-				}
-				
 			}
 			
-			else if(cardType == credit)
-			{
-				//review try catch logic
-				if(verifyCardNumber(cardNumber) == false || cardHolder == null || verifyCVV(cardCVV) == false)
-				{
-					displayError();
-				}
+			else if(cardType == credit) {
+				// Card was tapped or inserted. Need to verify CVV
+				if (!(data instanceof CardSwipeData)) {
+					if(verifyCardNumber(cardNumber) == true && cardHolder != null && verifyCVV(cardCVV) == true) {
+						if(verifyDebitCard(data) == true) {
+							valueOfCart = new BigDecimal(0);
+							isAllItemPaid();
+						} else {
+							displayError();
+						}
+					} else {
+						displayError();
+					}
 				
-				if(verifyCreditCard(data) == true)
-				{
-					valueOfCart = new BigDecimal(0);
-					isAllItemPaid();
-				}
-				else {
-					displayError();
-				}
-
-				
-			
+				// Card was swiped. Verify only card name and number
+				} else {
+					if(verifyCardNumber(cardNumber) == true && cardHolder != null) {
+						if(verifyCreditCard(data) == true) {
+							valueOfCart = new BigDecimal(0);
+							isAllItemPaid();
+						} else {
+							displayError();
+						}
+					} else {
+						displayError();
+					}
+				}				
 			}
 			
-<<<<<<< Updated upstream:SCS - Software/org/lsmr/selfcheckout/customer/PaymentController.java
-			else if(cardType == membership)
-			{
-				if(cardHolder == null || verifyCardNumber(cardNumber) == false)
-				{
-=======
 			else if(cardType == membership){
 				// Change || to && Need to check.
 				// Membership cards are always swiped
@@ -419,20 +397,9 @@ public class PaymentController{
 						membershipNo = cardNumber;
 					}
 				} else {
->>>>>>> Stashed changes:SCS - Software/src/org/lsmr/selfcheckout/customer/PaymentController.java
 					displayError();
 				}
-				if(verifyMembershipCard(data) == true)
-				{
-					membershipNo = cardNumber;
-				}
-				
-				
 			}
-			
 		}
-		
-		
 	}
-	
 }
