@@ -128,9 +128,9 @@ public class PaymentController{
 		return true;
 	}
 	
-	public void notifyManualMembershipEntry(String manualMembershipNo) {
+	public void manualMembershipEntry(String manualMembershipNo) {
 		// Simulates customer entering their membership number through touch screen.
-		manualMembershipNo = "405200";
+//		manualMembershipNo = "405200";
 		/**
 		 * Simulate going to the database and finding which account corresponds with
 		 * the entered Membership number
@@ -326,12 +326,9 @@ public class PaymentController{
 			
 			
 			// We don't need it because if CardType is null then SimulationException will be directly thrown.
-			if(cardType == null) {
-				displayError();
-			}
 			
 			
-			else if(cardType == debit) {
+			if(cardType == debit) {
 				// Card was tapped or inserted. Need to verify CVV
 				if (!(data instanceof CardSwipeData)) {
 					if(verifyCardNumber(cardNumber) == true && cardHolder != null && verifyCVV(cardCVV) == true) {

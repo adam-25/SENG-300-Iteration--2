@@ -12,6 +12,7 @@ import org.lsmr.selfcheckout.Card;
 import org.lsmr.selfcheckout.ChipFailureException;
 import org.lsmr.selfcheckout.Card.CardData;
 import org.lsmr.selfcheckout.Item;
+import org.lsmr.selfcheckout.MagneticStripeFailureException;
 import org.lsmr.selfcheckout.Numeral;
 import org.lsmr.selfcheckout.customer.BaggingAreaController;
 import org.lsmr.selfcheckout.customer.PaymentController;
@@ -189,7 +190,8 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 	//Making the membership card
 	Card mcard = new Card("MEMBERSHIP", "405119", "Name", null, null, false, false);
 	
-	cs.cardReader.swipe(mcard);
+	while (!PAcontroller.getCardData())
+		cs.cardReader.swipe(mcard);
 	
 	//Scanning Items
 	scanError(milk);
@@ -220,10 +222,18 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 		
 		Card mcard = new Card("MEMBERSHIP", "1234567890123456", "Name", null, null, false, false);
 		
-		try {
-			cs.cardReader.swipe(mcard);
-		} catch (IOException e) {
-			e.printStackTrace();
+		while (!PAcontroller.getCardData())
+		{
+			try {
+				cs.cardReader.swipe(mcard);
+			} 
+			catch (MagneticStripeFailureException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		//Scanning Items
@@ -246,6 +256,28 @@ public class ReceiptPrinterControllerTest extends BaseTestClass{
 		
 		Assert.assertTrue(cs.printer.removeReceipt().contains(PAcontroller.getMembershipNo()));
 		
+	}
+	
+	@Test
+	public void manualEntryMembershipNoTest()
+	{
+		BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+		BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+		BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);	
+		
+		scanError(milk);
+		scanError(eggs);
+		scanError(toast);
+		
+		PAcontroller.setValueOfCart(new BigDecimal(10));
+		
+		PAcontroller.manualMembershipEntry("1234567890123456");
+		
+		RPcontroller.printReceipt();
+		
+		cs.printer.cutPaper();
+		
+		Assert.assertTrue(cs.printer.removeReceipt().contains(PAcontroller.getMembershipNo()));	
 	}
 	
 }
