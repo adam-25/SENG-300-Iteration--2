@@ -19,14 +19,16 @@ public class TouchScreenController  {
 	 * Enables the scanner to allow the user to begin scanning items.
 	 */
 	public void initiateStart() {
-		checkoutStation.scanner.enable();
+		checkoutStation.mainScanner.enable();
+		checkoutStation.handheldScanner.enable();
 	}
 	
 	/**
 	 * To be triggered after all items are scanned. Disables scanner and allows the user to pay with cash.
 	 */
 	public void inititateCheckout() {
-		checkoutStation.scanner.disable();
+		checkoutStation.mainScanner.disable();
+		checkoutStation.handheldScanner.disable();
 		checkoutStation.coinSlot.enable();
 		checkoutStation.banknoteInput.enable();
 	}
