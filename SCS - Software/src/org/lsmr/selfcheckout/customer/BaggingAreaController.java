@@ -23,6 +23,7 @@ public class BaggingAreaController extends TouchScreenController{
 	private long begin;
 	private boolean askAttendantHelp = false;
 
+
 	// Constructor
 	public BaggingAreaController(SelfCheckoutStation cs) {
 		super(cs);
@@ -46,7 +47,7 @@ public class BaggingAreaController extends TouchScreenController{
 		return numOfItemsInBaggingArea;
 	}
 
-	public void getBeginTime(long begin) {
+	public void setBeginTime(double begin) {
 		this.begin = begin;
 	}
 
@@ -79,8 +80,8 @@ public class BaggingAreaController extends TouchScreenController{
 			// Once item has been placed in bagging area, enable the scanner
 			// If expected weight of cart (determined by scanner)
 			// Is the same of actual weigh of cart (determined by electronic scale)
-			if (scanItemControl.getWeightOfCart() == weightOfCart && weightOfCart
-					- scanItemControl.getWeightOfCart() < checkoutStation.baggingArea.getSensitivity()) {
+			if (scanItemControl.getWeightOfCart() == weightOfCart || weightOfCart
+					- scanItemControl.getWeightOfCart() <= checkoutStation.baggingArea.getSensitivity()) {
 				checkoutStation.mainScanner.enable();
 				checkoutStation.handheldScanner.enable();
 			} else {
@@ -110,7 +111,7 @@ public class BaggingAreaController extends TouchScreenController{
 		}
 	}
 
-	public void attendantVeritfyBag() {
+	public void attendantVerifiedBag() {
 		BigDecimal bagPrice = new BigDecimal(0);
 		Numeral[] nBag = { Numeral.nine, Numeral.nine, Numeral.nine, Numeral.nine };
 		Barcode barcodeBag = new Barcode(nBag);
