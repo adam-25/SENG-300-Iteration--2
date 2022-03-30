@@ -217,94 +217,93 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 	
 	//Test if scanner is disabled if there is a weight discrepancy
 		//test 2 items with one having discrepancy in the weight that is correct weight and one that is greater than the expected
-		@Test
-		public void testWeightChanged3() {
-			BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
-			BarcodedItem item1Dup1 = new BarcodedItem(barcodeItem1, 400.0);
+	@Test
+	public void testWeightChanged3() {
+		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
+		BarcodedItem item1Dup1 = new BarcodedItem(barcodeItem1, 400.0);
 
-			try {
-				mainScanError(item1);
-				mainScanError(item1Dup1);
-			} catch (Exception e) {
-				System.out.println("Shouldn't happen");
-				fail();
-			}
-			
-			Assert.assertTrue(checkoutStation.mainScanner.isDisabled());
-			Assert.assertTrue(checkoutStation.handheldScanner.isDisabled());
-		}
-	
-		//Test to see that when an item is removed the controller knows and adjusts the number in the cart
-		@Test
-		public void testWeightChanged4() {
-			BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
-			BarcodedItem item2 = new BarcodedItem(barcodeItem2, 100.0);
-			BarcodedItem item3 = new BarcodedItem(barcodeItem3, 1000.0);
-			BarcodedItem item3Dup1 = new BarcodedItem(barcodeItem3, 1000.0);
-
-			Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
-			
-			try {
-				mainScanError(item3);
-				mainScanError(item1);
-				mainScanError(item2);
-				mainScanError(item3Dup1);
-				
-			} catch(Exception e) {
-				//shouldn't each here
-				System.out.println("not supposed to occur");
-				e.printStackTrace();
-				fail();
-			}
-			Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 4);
-			
-			try {
-				checkoutStation.baggingArea.remove(item3Dup1);
-			} catch (Exception e) {
-				fail();
-			}
-			
-			Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
-			Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
-			Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 3);
+		try {
+			mainScanError(item1);
+			mainScanError(item1Dup1);
+		} catch (Exception e) {
+			System.out.println("Shouldn't happen");
+			fail();
 		}
 		
+		Assert.assertTrue(checkoutStation.mainScanner.isDisabled());
+		Assert.assertTrue(checkoutStation.handheldScanner.isDisabled());
+	}
+	
+		//Test to see that when an item is removed the controller knows and adjusts the number in the cart
+	@Test
+	public void testWeightChanged4() {
+		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
+		BarcodedItem item2 = new BarcodedItem(barcodeItem2, 100.0);
+		BarcodedItem item3 = new BarcodedItem(barcodeItem3, 1000.0);
+		BarcodedItem item3Dup1 = new BarcodedItem(barcodeItem3, 1000.0);
+
+		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
+		
+		try {
+			mainScanError(item3);
+			mainScanError(item1);
+			mainScanError(item2);
+			mainScanError(item3Dup1);
+				
+		} catch(Exception e) {
+			//shouldn't each here
+			System.out.println("not supposed to occur");
+			e.printStackTrace();
+			fail();
+		}
+		Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 4);
+			
+		try {
+			checkoutStation.baggingArea.remove(item3Dup1);
+		} catch (Exception e) {
+			fail();
+		}
+		
+		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
+		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
+		Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 3);
+	}
+		
 		//Test to see that when all items are removed the controller knows and adjusts the number in the cart
-				@Test
-				public void testWeightChanged5() {
-					BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
-					BarcodedItem item2 = new BarcodedItem(barcodeItem2, 100.0);
-					BarcodedItem item3 = new BarcodedItem(barcodeItem3, 1000.0);
+	@Test
+	public void testWeightChanged5() {
+		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
+		BarcodedItem item2 = new BarcodedItem(barcodeItem2, 100.0);
+		BarcodedItem item3 = new BarcodedItem(barcodeItem3, 1000.0);
 
 
-					Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
-					Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
+		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
+		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 					
-					try {
-						mainScanError(item3);
-						mainScanError(item1);
-						mainScanError(item2);
+		try {
+			mainScanError(item3);
+			mainScanError(item1);
+			mainScanError(item2);
 
 						
-					} catch(Exception e) {
+		} catch(Exception e) {
 						//shouldn't each here
-						System.out.println("not supposed to occur");
-						e.printStackTrace();
-						fail();
-					}
+			System.out.println("not supposed to occur");
+			e.printStackTrace();
+			fail();
+		}
 					
-					Assert.assertEquals(3, BACController.getNumOfItemsInBaggingArea());
+		Assert.assertEquals(3, BACController.getNumOfItemsInBaggingArea());
 					
-					try {
-						checkoutStation.baggingArea.remove(item2);
-						checkoutStation.baggingArea.remove(item3);
-						checkoutStation.baggingArea.remove(item1);
-					} catch (Exception e) {
-						fail();
-					}
+		try {
+			checkoutStation.baggingArea.remove(item2);
+			checkoutStation.baggingArea.remove(item3);
+			checkoutStation.baggingArea.remove(item1);
+		} catch (Exception e) {
+			fail();
+		}
 					
 
-					Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 0);
-				}
-	
+		Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 0);
+	}
 }
