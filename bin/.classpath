@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+<<<<<<< Updated upstream
+=======
 	<classpathentry kind="src" path="org"/>
+>>>>>>> Stashed changes
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SCS - Hardware - v2.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="src" path="/SCS - Software"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SCS - Hardware - v2.0"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

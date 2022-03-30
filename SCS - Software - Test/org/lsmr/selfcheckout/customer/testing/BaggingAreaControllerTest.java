@@ -256,7 +256,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 				e.printStackTrace();
 				fail();
 			}
-			Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 3);
+			Assert.assertEquals(BACController.getNumOfItemsInBaggingArea(), 4);
 			
 			try {
 				checkoutStation.baggingArea.remove(item3Dup1);
