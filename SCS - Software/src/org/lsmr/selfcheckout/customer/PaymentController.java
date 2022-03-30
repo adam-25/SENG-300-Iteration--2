@@ -45,7 +45,9 @@ public class PaymentController{
 	private List<Coin> coinTrayList;
 	private BigDecimal initialValueOfCart;
 	private String membershipNo = null;
-	
+	private boolean showError = false;
+	private boolean cardDataRead = false;
+	private boolean cardInsert = false;
 	
 	public PaymentController(SelfCheckoutStation cs){
 		checkoutStation = cs;
@@ -85,6 +87,16 @@ public class PaymentController{
 		valueOfCart = cartValue;
 	}
 	
+	public boolean getShowError()
+	{
+		return showError;
+	}
+	
+	public boolean getCardInserted()
+	{
+		return cardInsert;
+	}
+	
 	/**
 	 * This method is used when an invalid card is read. In the final implementation, an error would
 	 * be displayed on the customer's screen, then they would get prompted to choose a payment option.
@@ -92,12 +104,18 @@ public class PaymentController{
 	public void displayError() 
 	{
 		System.out.println("an error has occurred");
+		showError = true;
 		// The user would get sent back to the payment options screen in the final implementation
 	}
 	
 	public String getMembershipNo()
 	{
 		return membershipNo;
+	}
+	
+	public boolean getCardData()
+	{
+		return cardDataRead;
 	}
 	
 	public boolean hasMembership()
@@ -110,9 +128,9 @@ public class PaymentController{
 		return true;
 	}
 	
-	public void notifyManualMembershipEntry(String manualMembershipNo) {
+	public void manualMembershipEntry(String manualMembershipNo) {
 		// Simulates customer entering their membership number through touch screen.
-		manualMembershipNo = "405200";
+//		manualMembershipNo = "405200";
 		/**
 		 * Simulate going to the database and finding which account corresponds with
 		 * the entered Membership number
@@ -272,12 +290,12 @@ public class PaymentController{
 
 		@Override
 		public void cardInserted(CardReader reader) {
-			// ignore 
+			cardInsert = true;
 		}
 
 		@Override
 		public void cardRemoved(CardReader reader) {
-			// ignore
+			cardInsert = false;
 		}
 
 		@Override
@@ -295,6 +313,7 @@ public class PaymentController{
 		*/
 		@Override
 		public void cardDataRead(CardReader reader, CardData data) {
+			cardDataRead = true;
 			String cardType = data.getType();
 			String cardNumber = data.getNumber();
 			String cardHolder = data.getCardholder();
@@ -305,11 +324,11 @@ public class PaymentController{
 			cardCVV = data.getCVV();
 			}
 			
-			if(cardType == null) {
-				displayError();
-			}
 			
-			else if(cardType == debit) {
+			// We don't need it because if CardType is null then SimulationException will be directly thrown.
+			
+			
+			if(cardType == debit) {
 				// Card was tapped or inserted. Need to verify CVV
 				if (!(data instanceof CardSwipeData)) {
 					if(verifyCardNumber(cardNumber) == true && cardHolder != null && verifyCVV(cardCVV) == true) {
@@ -368,8 +387,9 @@ public class PaymentController{
 			}
 			
 			else if(cardType == membership){
+				// Change || to && Need to check.
 				// Membership cards are always swiped
-				if(cardHolder != null || verifyCardNumber(cardNumber) == true) {
+				if(cardHolder != null && verifyCardNumber(cardNumber) == true) {
 					if(verifyMembershipCard(data) == true) {
 						membershipNo = cardNumber;
 					}
