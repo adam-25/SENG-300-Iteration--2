@@ -20,7 +20,7 @@ public class BaggingAreaController {
 	private ScanItemController scanItemControl;
 	private int numOfItemsInBaggingArea;
 	private double previousWeightOfCart;
-	private long begin;
+	private double begin;
 
 	// Constructor
 	public BaggingAreaController(SelfCheckoutStation cs) {
@@ -45,7 +45,7 @@ public class BaggingAreaController {
 		return numOfItemsInBaggingArea;
 	}
 
-	public void getBeginTime(long begin) {
+	public void setBeginTime(double begin) {
 		this.begin = begin;
 	}
 
