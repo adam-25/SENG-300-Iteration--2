@@ -12,7 +12,7 @@ import org.lsmr.selfcheckout.devices.SimulationException;
 import org.lsmr.selfcheckout.devices.observers.AbstractDeviceObserver;
 import org.lsmr.selfcheckout.devices.observers.ElectronicScaleObserver;
 
-public class BaggingAreaController {
+public class BaggingAreaController extends TouchScreenController{
 
 	private final SelfCheckoutStation checkoutStation;
 	private BAC bac;
@@ -21,10 +21,11 @@ public class BaggingAreaController {
 	private int numOfItemsInBaggingArea;
 	private double previousWeightOfCart;
 	private long begin;
+	private boolean askAttendantHelp = false;
 
 	// Constructor
 	public BaggingAreaController(SelfCheckoutStation cs) {
-
+		super(cs);
 		checkoutStation = cs;
 		bac = new BAC();
 		weightOfCart = 0;
@@ -73,6 +74,7 @@ public class BaggingAreaController {
 			} else {
 				numOfItemsInBaggingArea--;
 			}
+			
 
 			// Once item has been placed in bagging area, enable the scanner
 			// If expected weight of cart (determined by scanner)
@@ -87,7 +89,8 @@ public class BaggingAreaController {
 			}
 
 			long end = System.currentTimeMillis();
-			if (end - begin > 5000) {
+				
+			if (end - begin > 5000 && !askAttendantHelp) {
 				throw new SimulationException("Fail to place the item in the bagging area within the required time");
 			}
 		}
@@ -109,14 +112,20 @@ public class BaggingAreaController {
 
 	public void attendantVeritfyBag() {
 		BigDecimal bagPrice = new BigDecimal(0);
-		Numeral[] nBag = { Numeral.one, Numeral.two, Numeral.three, Numeral.four };
+		Numeral[] nBag = { Numeral.nine, Numeral.nine, Numeral.nine, Numeral.nine };
 		Barcode barcodeBag = new Barcode(nBag);
 		scanItemControl.getBarcodePrice().put(barcodeBag, bagPrice);
 		double bagWeight = weightOfCart - previousWeightOfCart;
 		scanItemControl.getBarcodeWeight().put(barcodeBag, bagWeight);
 		BarcodedItem bagItem = new BarcodedItem(barcodeBag, bagWeight);
 		checkoutStation.mainScanner.enable();
+		checkoutStation.handheldScanner.enable();
 		checkoutStation.mainScanner.scan(bagItem);
+	}
+	
+	public void setAttendantHelp(boolean attendantHelp)
+	{
+		askAttendantHelp = attendantHelp;
 	}
 
 	public double getWeightOfCart() {
