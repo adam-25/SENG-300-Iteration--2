@@ -314,7 +314,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		checkoutStation.baggingArea.add(bag);
 		
-		BACController.attendantVeritfyBag();
+		BACController.attendantVerifiedBag();
 		
 		BACController.setAttendantHelp(false);
 		
@@ -335,7 +335,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		checkoutStation.baggingArea.add(bag);
 		
-		BACController.attendantVeritfyBag();
+		BACController.attendantVerifiedBag();
 		
 		BACController.setAttendantHelp(false);
 		
@@ -378,7 +378,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		checkoutStation.baggingArea.add(bag);
 		
-		BACController.attendantVeritfyBag();
+		BACController.attendantVerifiedBag();
 		
 		BACController.setAttendantHelp(false);
 		
@@ -403,7 +403,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		checkoutStation.baggingArea.add(bag);
 		
-		BACController.attendantVeritfyBag();
+		BACController.attendantVerifiedBag();
 		
 		BACController.setAttendantHelp(false);
 		
@@ -423,7 +423,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		try {
 			checkoutStation.baggingArea.add(bag);
-			BACController.attendantVeritfyBag();
+			BACController.attendantVerifiedBag();
 			fail("Expected SimulationException to be thrown");
 		}
 		catch (SimulationException e)

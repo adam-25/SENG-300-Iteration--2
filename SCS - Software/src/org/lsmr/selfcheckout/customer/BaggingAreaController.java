@@ -20,7 +20,7 @@ public class BaggingAreaController extends TouchScreenController{
 	private ScanItemController scanItemControl;
 	private int numOfItemsInBaggingArea;
 	private double previousWeightOfCart;
-	private long begin;
+	private double begin;
 	private boolean askAttendantHelp = false;
 
 
