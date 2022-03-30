@@ -81,7 +81,15 @@ public class ChangeReceiveController {
 		}
 		for(Integer integer : checkoutStation.banknoteDispensers.keySet()) {
 			BanknoteDispenser noteDispenser = checkoutStation.banknoteDispensers.get(integer);
+			noteDispenser = new BanknoteDispenser(100);
+			
+			for (int i=0;i< 100; i++) {
+				
+			}
+			
 			noteDispenser.attach(bndobs);
+			
+			//noteDispenser.load(validBanknoteDenominations);
 		}
 		
 	}
@@ -126,6 +134,9 @@ public class ChangeReceiveController {
 		currentChangeLeft = changeBack; //Initial amount of change to give back
 		for(Integer i : checkoutStation.banknoteDispensers.keySet()) {
 			BanknoteDispenser noteDispenser = checkoutStation.banknoteDispensers.get(i);
+			//i = 100;
+//			noteDispenser.endConfigurationPhase();
+//			noteDispenser.enable();
 			numOutput = currentChangeLeft.intValue() / i; 
 			for(int j = 0; j < numOutput; j++) {
 				noteDispenser.emit(); //emit the bank note
