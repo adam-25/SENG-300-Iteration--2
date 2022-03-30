@@ -5,6 +5,7 @@ import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
 public class TouchScreenController  {
 		
 	private final SelfCheckoutStation checkoutStation;
+	protected boolean askAttendantHelp = false;
 	
 	//Constructor - Initialize SelfCheckoutStation
 	
