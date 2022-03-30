@@ -77,8 +77,8 @@ public class BaggingAreaController {
 			// Once item has been placed in bagging area, enable the scanner
 			// If expected weight of cart (determined by scanner)
 			// Is the same of actual weigh of cart (determined by electronic scale)
-			if (scanItemControl.getWeightOfCart() == weightOfCart && weightOfCart
-					- scanItemControl.getWeightOfCart() < checkoutStation.baggingArea.getSensitivity()) {
+			if (scanItemControl.getWeightOfCart() == weightOfCart || weightOfCart
+					- scanItemControl.getWeightOfCart() <= checkoutStation.baggingArea.getSensitivity()) {
 				checkoutStation.mainScanner.enable();
 				checkoutStation.handheldScanner.enable();
 			} else {
@@ -107,7 +107,7 @@ public class BaggingAreaController {
 		}
 	}
 
-	public void attendantVeritfyBag() {
+	public void attendantVerifiedBag() {
 		BigDecimal bagPrice = new BigDecimal(0);
 		Numeral[] nBag = { Numeral.one, Numeral.two, Numeral.three, Numeral.four };
 		Barcode barcodeBag = new Barcode(nBag);
