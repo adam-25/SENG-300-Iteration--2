@@ -11,7 +11,7 @@ import org.lsmr.selfcheckout.devices.BarcodeScanner;
 import org.lsmr.selfcheckout.devices.SelfCheckoutStation;
 import org.lsmr.selfcheckout.devices.observers.AbstractDeviceObserver;
 import org.lsmr.selfcheckout.devices.observers.BarcodeScannerObserver;
-import org.lsmr.selfcheckout.devices.ElectronicScale;
+
 
 public class ScanItemController  {
 	 
@@ -24,6 +24,7 @@ public class ScanItemController  {
 	private SIC sic;
 	private List<Barcode> scannedItemList;  
 	private BaggingAreaController bagAreaControl;	
+
 	
 
 	//Constructor

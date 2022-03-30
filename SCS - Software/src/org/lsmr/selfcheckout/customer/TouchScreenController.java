@@ -33,6 +33,7 @@ public class TouchScreenController  implements TouchScreenObserver{
 		state = checkoutState.SCAN;
 		checkoutStation.mainScanner.enable();
 		checkoutStation.handheldScanner.enable();
+		
 	}
 	
 	/**

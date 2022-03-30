@@ -52,6 +52,8 @@ public class PaymentControllerTest extends BaseTestClass {
 	
 	private ReceiptPrinterController RPcontroller;
 	
+
+	
 	BigDecimal milkPrice = new BigDecimal(2.50);
 	Numeral[] nMilk = {Numeral.one, Numeral.two, Numeral.three, Numeral.four};
 	Barcode barcodeMilk = new Barcode(nMilk);
@@ -127,6 +129,8 @@ public class PaymentControllerTest extends BaseTestClass {
 		} catch (OverloadException e) {
 			e.printStackTrace();
 		}
+		
+		
 		
 		//See if cost was paid
 		//Value of cart at the start of test is $20
