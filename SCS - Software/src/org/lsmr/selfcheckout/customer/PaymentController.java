@@ -9,6 +9,7 @@ import java.util.List;
 import org.lsmr.selfcheckout.BlockedCardException;
 import org.lsmr.selfcheckout.Card;
 import org.lsmr.selfcheckout.Coin;
+import org.lsmr.selfcheckout.customer.TouchScreenController.checkoutState;
 import org.lsmr.selfcheckout.Card.CardData;
 import org.lsmr.selfcheckout.Card.CardSwipeData;
 import org.lsmr.selfcheckout.devices.AbstractDevice;
@@ -26,8 +27,9 @@ import org.lsmr.selfcheckout.devices.observers.CardReaderObserver;
 import org.lsmr.selfcheckout.devices.observers.CoinSlotObserver;
 import org.lsmr.selfcheckout.devices.observers.CoinTrayObserver;
 import org.lsmr.selfcheckout.devices.observers.CoinValidatorObserver;
+import org.lsmr.selfcheckout.customer.ScanItemController;
 
-public class PaymentController{
+public class PaymentController extends TouchScreenController{
 
 	// The three possible values CardDate.getType() should return
 	private final String debit = "DEBIT";
@@ -37,11 +39,15 @@ public class PaymentController{
 	// Used for testing. Setting verified to false will simulate the bank rejecting the credit/debit card.
 	public boolean verified = true;
 	
+	
+	
 	private BigDecimal valueOfCart;
 	private final SelfCheckoutStation checkoutStation; 
+	///private TouchScreenController touchScreen = new TouchScreenController(checkoutStation);
 	private PCC pcc;
 	private PCB pcb;
 	private CC cc;
+	private ScanItemController SIcontroller;
 	private List<Coin> coinTrayList;
 	private BigDecimal initialValueOfCart;
 	private String membershipNo = null;
@@ -50,7 +56,10 @@ public class PaymentController{
 	private boolean cardInsert = false;
 	
 	public PaymentController(SelfCheckoutStation cs){
+		super(cs);
 		checkoutStation = cs;
+		
+		//touchScreen = new TouchScreenController(checkoutStation);
 		initialValueOfCart = new BigDecimal(0);
 		valueOfCart = new BigDecimal(0);
 		coinTrayList = new ArrayList<Coin>();
@@ -136,6 +145,14 @@ public class PaymentController{
 		 * the entered Membership number
 		*/
 		membershipNo = manualMembershipNo;
+	}
+	
+	public void addItemsWithPartialPayment() {
+		state = checkoutState.SCAN;
+		checkoutStation.mainScanner.enable();
+		checkoutStation.handheldScanner.enable();
+		checkoutStation.coinSlot.disable();
+		checkoutStation.banknoteInput.disable();
 	}
 	
 	/**
