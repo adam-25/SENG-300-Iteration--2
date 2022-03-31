@@ -121,6 +121,8 @@ public class PaymentControllerTest extends BaseTestClass {
 		pController.setValueOfCart(totalCost);
 
 		Banknote banknote = new Banknote(Currency.getInstance("CAD"), 20);
+		
+		while (pController.isAcceptBanknote() == false) {
 		try {
 			//accept valid banknote
 			cs.banknoteInput.accept(banknote);
@@ -130,7 +132,7 @@ public class PaymentControllerTest extends BaseTestClass {
 			e.printStackTrace();
 		}
 		
-		
+		}
 		
 		//See if cost was paid
 		//Value of cart at the start of test is $20

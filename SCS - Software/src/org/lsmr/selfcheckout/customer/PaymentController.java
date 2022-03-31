@@ -54,6 +54,7 @@ public class PaymentController extends TouchScreenController{
 	private boolean showError = false;
 	private boolean cardDataRead = false;
 	private boolean cardInsert = false;
+	private boolean acceptBanknote = false;
 	
 	public PaymentController(SelfCheckoutStation cs){
 		super(cs);
@@ -174,6 +175,14 @@ public class PaymentController extends TouchScreenController{
 	}
 	
 	
+	/**
+	 * @return the acceptBanknote
+	 */
+	public boolean isAcceptBanknote() {
+		return acceptBanknote;
+	}
+
+
 	//COIN PAYMENT - Implementation of Coin observers
 	private class PCC implements CoinSlotObserver, CoinValidatorObserver, CoinTrayObserver{
 		@Override
@@ -246,9 +255,11 @@ public class PaymentController extends TouchScreenController{
 		@Override
 		public void validBanknoteDetected(BanknoteValidator validator, Currency currency, int value) {
 			//Subtract the value of cart from the customer bank note value
+			acceptBanknote = true;
 			BigDecimal bigDecimalVal = new BigDecimal(value);
 			valueOfCart = valueOfCart.subtract(bigDecimalVal);
 			isAllItemPaid();
+			
 		}
 
 		@Override
