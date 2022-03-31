@@ -53,12 +53,22 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		}
 	}
 	
-	public void mainScanError(BarcodedItem item) {
+	public void mainScanErrorWithPlacement(BarcodedItem item) {
 		while (true) {
 			checkoutStation.mainScanner.scan(item);
 			
 			if(SICController.numOfScannedItems() == (1+BACController.getNumOfItemsInBaggingArea())) {
 				checkoutStation.baggingArea.add(item);
+				break;
+			}
+		}
+	}
+	
+	public void mainScanErrorWithoutPlacement(BarcodedItem item) {
+		while (true) {
+			checkoutStation.mainScanner.scan(item);
+			
+			if(SICController.numOfScannedItems() == (1+BACController.getNumOfItemsInBaggingArea())) {
 				break;
 			}
 		}
@@ -108,13 +118,13 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		
 		try {
-			mainScanError(item3);
+			mainScanErrorWithPlacement(item3);
 
-			mainScanError(item1);
+			mainScanErrorWithPlacement(item1);
 
-			mainScanError(item2);
+			mainScanErrorWithPlacement(item2);
 	
-			mainScanError(item3Dup1);
+			mainScanErrorWithPlacement(item3Dup1);
 
 
 			
@@ -143,10 +153,10 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 			Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 			
 			try {
-				mainScanError(item3);
-				mainScanError(item1);
-				mainScanError(item2);
-				mainScanError(item3Dup1);
+				mainScanErrorWithPlacement(item3);
+				mainScanErrorWithPlacement(item1);
+				mainScanErrorWithPlacement(item2);
+				mainScanErrorWithPlacement(item3Dup1);
 			} catch(Exception e) {
 				//shouldn't each here
 				System.out.println("not supposed to occur");
@@ -181,7 +191,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 400.0);
 		
 		try {
-			mainScanError(item1);
+			mainScanErrorWithPlacement(item1);
 		} catch (Exception e) {
 			System.out.println("Shouldn't happen");
 			fail();
@@ -200,7 +210,7 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 400.0);
 
 		try {
-			mainScanError(item1);
+			mainScanErrorWithPlacement(item1);
 		} catch (Exception e) {
 			System.out.println("Shouldn't happen");
 			fail();
@@ -218,8 +228,8 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		BarcodedItem item1Dup1 = new BarcodedItem(barcodeItem1, 400.0);
 		
 		try {
-			mainScanError(item1);
-			mainScanError(item1Dup1);
+			mainScanErrorWithPlacement(item1);
+			mainScanErrorWithPlacement(item1Dup1);
 		} catch (Exception e) {
 			System.out.println("Shouldn't happen");
 			fail();
@@ -240,10 +250,10 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
 			
 		try {
-			mainScanError(item3);
-			mainScanError(item1);
-			mainScanError(item2);
-			mainScanError(item3Dup1);
+			mainScanErrorWithPlacement(item3);
+			mainScanErrorWithPlacement(item1);
+			mainScanErrorWithPlacement(item2);
+			mainScanErrorWithPlacement(item3Dup1);
 				
 		} catch(Exception e) {
 				//shouldn't each here
@@ -276,9 +286,9 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 					
 		try {
-			mainScanError(item3);
-			mainScanError(item1);
-			mainScanError(item2);
+			mainScanErrorWithPlacement(item3);
+			mainScanErrorWithPlacement(item1);
+			mainScanErrorWithPlacement(item2);
 
 						
 		} catch(Exception e) {
@@ -357,9 +367,9 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 					
 		try {
-			mainScanError(item3);
-			mainScanError(item1);
-			mainScanError(item2);
+			mainScanErrorWithPlacement(item3);
+			mainScanErrorWithPlacement(item1);
+			mainScanErrorWithPlacement(item2);
 
 						
 		} catch(Exception e) {
@@ -437,6 +447,37 @@ public class BaggingAreaControllerTest extends BaseTestClass {
 		
 		Assert.assertTrue(checkoutStation.mainScanner.isDisabled());
 		Assert.assertTrue(checkoutStation.handheldScanner.isDisabled());
+	}
+	
+	@Test (expected = SimulationException.class)
+	public void failsToPlaceItemInBaggingArea()
+	{
+		BarcodedItem item1 = new BarcodedItem(barcodeItem1, 300.0);
+
+		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
+		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
+					
+		try {
+			mainScanErrorWithoutPlacement(item1);
+
+						
+		} catch(Exception e) {
+			//shouldn't each here
+			System.out.println("not supposed to occur");
+			e.printStackTrace();
+			fail();
+		}
+		
+		try {
+			Thread.sleep(6000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		checkoutStation.baggingArea.add(item1);
+		
+		Assert.assertFalse(checkoutStation.mainScanner.isDisabled());
+		Assert.assertFalse(checkoutStation.handheldScanner.isDisabled());
 	}
 	
 }

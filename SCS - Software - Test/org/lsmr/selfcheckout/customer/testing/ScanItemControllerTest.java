@@ -6,11 +6,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.HashMap;
+
+import org.lsmr.selfcheckout.Banknote;
 import org.lsmr.selfcheckout.Barcode;
 import org.lsmr.selfcheckout.BarcodedItem;
 import org.lsmr.selfcheckout.Item;
 import org.lsmr.selfcheckout.Numeral;
 import org.lsmr.selfcheckout.customer.BaggingAreaController;
+import org.lsmr.selfcheckout.customer.PaymentController;
 import org.lsmr.selfcheckout.customer.ScanItemController;
 import org.lsmr.selfcheckout.devices.DisabledException;
 import org.lsmr.selfcheckout.devices.OverloadException;
@@ -34,6 +37,7 @@ public class ScanItemControllerTest extends BaseTestClass{
 	//declaring controllers 
 	private ScanItemController SIcontroller;
 	private BaggingAreaController bAcontroller;
+	private PaymentController pController;
 	
 	//initializing prices of items
 	BigDecimal milkPrice = new BigDecimal(2.50);
@@ -80,6 +84,8 @@ public class ScanItemControllerTest extends BaseTestClass{
 		bAcontroller = new BaggingAreaController(cs);
 		SIcontroller = new ScanItemController(cs, barcodePrice, barcodeWeight);
 
+		pController = new PaymentController(cs);
+		
 		//calling object methods
 		bAcontroller.setScanItemControl(SIcontroller);
 		SIcontroller.setBagAreaControl(bAcontroller);
@@ -224,6 +230,115 @@ public class ScanItemControllerTest extends BaseTestClass{
 					
 		}
 				
+		@Test
+		public void scanItemAfterPartialPaymentTest() throws DisabledException, OverloadException
+		{
+			BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+			BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+			BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+			
+			BigDecimal expectedValueOfCart = new BigDecimal(0);
+			expectedValueOfCart = expectedValueOfCart.add(milkPrice);
+			expectedValueOfCart = expectedValueOfCart.add(eggPrice);
+			
+			pController.initiateStart();
+			
+			scanError(milk);
+			scanError(eggs);
+			
+			pController.setValueOfCart(expectedValueOfCart);
+			
+			pController.inititateCheckout();
+			
+			cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 5));
+			
+			BigDecimal expectedValueOfCartAfterPartialPayment;
+			
+			expectedValueOfCartAfterPartialPayment = expectedValueOfCart.subtract(new BigDecimal(5));
+
+			Assert.assertEquals(expectedValueOfCartAfterPartialPayment, pController.getValueOfCart());
+			Assert.assertTrue(cs.mainScanner.isDisabled());
+			Assert.assertTrue(cs.handheldScanner.isDisabled());
+			
+			pController.addItemsWithPartialPayment();
+
+			Assert.assertFalse(cs.mainScanner.isDisabled());
+			Assert.assertFalse(cs.handheldScanner.isDisabled());
+			
+			expectedValueOfCart = expectedValueOfCartAfterPartialPayment;
+			expectedValueOfCart = expectedValueOfCart.add(toastPrice);
+			
+			scanError(toast);
+			
+			pController.setValueOfCart(expectedValueOfCart);
+			
+			Assert.assertEquals(3, SIcontroller.numOfScannedItems());
+			
+			try {
+				cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 10));
+				fail("Disabled Exception to be thrown");
+			}
+			catch (DisabledException e)
+			{
+				Assert.assertTrue(e instanceof DisabledException);
+			}
+			catch (Exception e)
+			{
+				fail("Disabled Exception to be thrown instead of " + e);
+			}
+			
+			Assert.assertEquals(expectedValueOfCart, pController.getValueOfCart());
+			
+		}
 		
+		@Test
+		public void fullPaymentAfterPartialPaymentTest() throws DisabledException, OverloadException
+		{
+			BarcodedItem milk = new BarcodedItem(barcodeMilk, 3.0);
+			BarcodedItem eggs = new BarcodedItem(barcodeEggs, 2.0);
+			BarcodedItem toast = new BarcodedItem(barcodeToast, 5.0);
+			
+			BigDecimal expectedValueOfCart = new BigDecimal(0);
+			expectedValueOfCart = expectedValueOfCart.add(milkPrice);
+			expectedValueOfCart = expectedValueOfCart.add(eggPrice);
+			
+			pController.initiateStart();
+			
+			scanError(milk);
+			scanError(eggs);
+			
+			pController.setValueOfCart(expectedValueOfCart);
+			
+			pController.inititateCheckout();
+			
+			cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 5));
+			
+			BigDecimal expectedValueOfCartAfterPartialPayment;
+			
+			expectedValueOfCartAfterPartialPayment = expectedValueOfCart.subtract(new BigDecimal(5));
+
+			Assert.assertTrue(cs.mainScanner.isDisabled());
+			Assert.assertTrue(cs.handheldScanner.isDisabled());
+			
+			pController.addItemsWithPartialPayment();
+
+			Assert.assertFalse(cs.mainScanner.isDisabled());
+			Assert.assertFalse(cs.handheldScanner.isDisabled());
+			
+			expectedValueOfCart = expectedValueOfCartAfterPartialPayment;
+			expectedValueOfCart = expectedValueOfCart.add(toastPrice);
+			
+			scanError(toast);
+			
+			pController.setValueOfCart(expectedValueOfCart);
+			
+			pController.inititateCheckout();
+			
+			cs.banknoteInput.accept(new Banknote(Currency.getInstance("CAD"), 10));
+			
+			Assert.assertTrue(cs.mainScanner.isDisabled());
+			Assert.assertTrue(cs.handheldScanner.isDisabled());
+			
+		}
 	
 }
