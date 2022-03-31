@@ -193,6 +193,7 @@ public class ScanItemControllerTest extends BaseTestClass{
 			scanError(eggs);
 			scanError(toast);
 			
+			cs.baggingArea.remove(eggs);
 			SIcontroller.unScanItem(eggs.getBarcode());
 			
 			
@@ -201,7 +202,8 @@ public class ScanItemControllerTest extends BaseTestClass{
 			
 			Assert.assertEquals(expectedWeightOfCart, SIcontroller.getWeightOfCart());
 			Assert.assertEquals(expectedValueOfCart, SIcontroller.getValueOfCart());
-			
+			Assert.assertFalse(cs.mainScanner.isDisabled());
+			Assert.assertFalse(cs.handheldScanner.isDisabled());
 		}
 		
 		//unscans a item not in the cart
