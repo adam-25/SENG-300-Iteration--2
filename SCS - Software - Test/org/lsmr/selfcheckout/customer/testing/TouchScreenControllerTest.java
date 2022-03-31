@@ -38,5 +38,17 @@ public class TouchScreenControllerTest extends BaseTestClass {
 		Assert.assertFalse(checkoutStation.banknoteInput.isDisabled());
 		Assert.assertFalse(checkoutStation.coinSlot.isDisabled());
 	}
+
+	@Test
+	public void testEnabled() {
+		touchScreenController.enabled(null);
+		Assert.assertTrue(touchScreenController.enabledTrue == true);
+	}
+	
+	@Test
+	public void testDisabled() {
+		touchScreenController.disabled(null);
+		Assert.assertTrue(touchScreenController.disabledTrue == true);
+	}
 	
 }
