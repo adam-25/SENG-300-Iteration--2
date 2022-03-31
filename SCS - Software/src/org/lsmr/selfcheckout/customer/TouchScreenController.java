@@ -6,10 +6,15 @@ import org.lsmr.selfcheckout.devices.observers.TouchScreenObserver;
 
 
 
-public class TouchScreenController  implements TouchScreenObserver{
+public class TouchScreenController implements TouchScreenObserver {
 		
 	private final SelfCheckoutStation checkoutStation;
 	public checkoutState state;
+	
+	// These 2 booleans are for Iteration 2 testing
+	public boolean enabledTrue = false;
+	public boolean disabledTrue = false;
+	// Delete for Iteration 3 ^^
 	
 	public enum checkoutState{
 		SCAN, PAY
@@ -49,13 +54,14 @@ public class TouchScreenController  implements TouchScreenObserver{
 
 	@Override
 	public void enabled(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
-		
+		// For testing purposes
+		enabledTrue = true;
 	}
 
 	@Override
 	public void disabled(AbstractDevice<? extends AbstractDeviceObserver> device) {
-		// TODO Auto-generated method stub
+		// For testing purposes
+		disabledTrue = true;
 		
 	}
 }
